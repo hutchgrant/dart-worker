@@ -29,24 +29,29 @@ class Cache {
   /*
    * SELECT all daemon RPC info
    */
-  daeObjs getCoins(){
+  Future<daeObjs> getCoins(){
+    var completer = new Completer();
+
     this.init();
     var daemons = new daeObjs(); 
     var table = db.collection('coins');
        db.open().then((_){
            print(" Retrieving all RPC Coin info");
            return table.find()
-               .forEach((col) => daemons.insert("test","test","test","test",0,"test",rate,rate,rate,2,true));     
+               .forEach((col) => daemons.insert(col["rpcCoin"], col["rpcUser"], col["rpcPass"], col["rpcServer"], col["rpcPort"], col["rpcWallPass"],
+                   col["rpcFee"], col["rpcTxFee"], col["rpcRate"], col["rpcMaxConf"], col["rpcEnable"] ));
          }).then((_) {
            print('closing db');
            db.close();
-           return daemons;
+           completer.complete(daemons);
          });
+       return completer.future;
   }
   /*
    * SELECT all mysql remote db info
    */
-  dbObj getDB(){
+  Future<dbObj> getDB(){
+    var completer = new Completer();
     this.init();
     var mysqlDB = new dbObj();
     var table = db.collection('mysql');
@@ -57,25 +62,32 @@ class Cache {
          }).then((_) {
            print('closing db');
            db.close();
-           mysqlDB.display();
-           return mysqlDB;
+           String ip = mysqlDB.ServerIP;
+           completer.complete(mysqlDB);
+       //    mysqlDB.display();
          });
+       return completer.future;
   }
   /*
    * SELECT all API preferences e.g. apikey
    */
-  String getPref(){
+  Future<String> getPref(){
+    var completer = new Completer();
+
     this.init();
     String apikey = "";
     var table = db.collection('pref');
        db.open().then((_){
            print(" Retrieving all API Preferences");
-           return table.find();   //// Reminder to add table + col + select
+           return table.find()
+               .forEach((col){ apikey = col["apikey"]; });        //// Reminder to add table + col + select
          }).then((_) {
            print('closing db');
            db.close();
-           return apikey;
+           completer.complete("$apikey");
          });
+       return completer.future;
+
   }
   /*
    * INSERT remote mysql db info
@@ -98,7 +110,7 @@ class Cache {
    */
   void cacheCoin(daeObj dae){
     this.init();
-    var table = db.collection('mysql');
+    var table = db.collection('coins');
     db.open().then((_){
       print(" INSERT RPC data into cache");
       var data = [];

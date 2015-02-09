@@ -5,10 +5,35 @@ import 'dart:io';
 import 'objects/daeObj.dart';
 import 'objects/dbObj.dart';
 import '../bin/Cache.dart';
+import 'server.dart';
 
 daeObjs daemons;
 dbObj  db;
   
+
+void menuCntrl(dbObj db, daeObjs dae, String apikey){
+  int menuSel = 0;
+  menuSel = Menu();
+ 
+  switch(menuSel){
+    case 1:
+      DBMenu(db);
+      break;
+    case 2:
+      RpcMenu(dae);
+      break;
+    case 3:
+      print("APIKEY = $apikey");
+      /// generate api key
+      break;
+    case 4:
+      /// start server
+      var server = new Server();
+      break;
+  }
+}
+
+
 /*
  * Display Main Menu
  */
