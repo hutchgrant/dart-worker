@@ -1,0 +1,11 @@
+name: dart_worker
+version: 0.0.1
+description: http work server ready to read get/post requests, utilizing a basic mongodb cache.
+environment:
+  sdk: '>=1.0.0 <2.0.0'
+dependencies:
+  bitcoind_client: any
+  logging: any
+  mongo_dart: any
+dev_dependencies:
+  unittest: any
