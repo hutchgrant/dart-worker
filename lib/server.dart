@@ -9,6 +9,7 @@ import 'dart:io';
 import 'dart:convert' show JSON;
 import './objects/daeObj.dart';
 import './objects/dbObj.dart';
+import 'rpcCntrl.dart';
 
 class Server {
   
@@ -58,6 +59,10 @@ class Server {
         var decoded = JSON.decode(data.toString());
     
         if (decoded.containsKey('apikey')) {
+          if(decoded["apikey"] == apikey){
+            var rpc = new rpcCntrl(daemons);
+            rpc.call("BTC", "getbalance", params:['fee',0]).then((result) => print(result));
+          }
           req.response.writeln('Working');
           req.response.close();
         } 

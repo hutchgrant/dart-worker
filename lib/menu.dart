@@ -24,12 +24,12 @@ void menuCntrl(dbObj db, daeObjs dae, String apikey){
       RpcMenu(dae);
       break;
     case 3:
+      /// generate api key
       Caesar c2=new Caesar(2547832562734583824582353);
       apikey = c2.encrypt("872314234CH2DSAECKD3d9OUT8ada2ECRYVaPTO90-a-ad");
       var cache = new Cache();
       cache.cachePref(apikey);
-      print("APIKEY = $apikey");
-      /// generate api key
+      print("APIKEY = $apikey"); 
       break;
     case 4:
       /// start server
