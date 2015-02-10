@@ -7,9 +7,9 @@ library Server;
 
 import 'dart:io';
 import 'dart:convert' show JSON;
-import './objects/daeObj.dart';
-import './objects/dbObj.dart';
-import 'rpcCntrl.dart';
+import './objects/daeobj.dart';
+import './objects/dbobj.dart';
+import 'rpccntrl.dart';
 
 class Server {
   

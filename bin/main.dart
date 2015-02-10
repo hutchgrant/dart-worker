@@ -5,8 +5,8 @@ import 'dart:async';
 import '../lib/menu.dart';
 import '../lib/server.dart';
 import 'Cache.dart';
-import '../lib/objects/daeObj.dart';
-import '../lib/objects/dbObj.dart';
+import '../lib/objects/daeobj.dart';
+import '../lib/objects/dbobj.dart';
 
 
 main() {

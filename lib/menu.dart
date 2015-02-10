@@ -2,8 +2,8 @@
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 import 'dart:io';
-import 'objects/daeObj.dart';
-import 'objects/dbObj.dart';
+import 'objects/daeobj.dart';
+import 'objects/dbobj.dart';
 import '../bin/Cache.dart';
 import 'server.dart';
 import 'cipher.dart';
