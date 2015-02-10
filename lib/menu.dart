@@ -6,6 +6,7 @@ import 'objects/daeObj.dart';
 import 'objects/dbObj.dart';
 import '../bin/Cache.dart';
 import 'server.dart';
+import 'cipher.dart';
 
 daeObjs daemons;
 dbObj  db;
@@ -14,7 +15,7 @@ dbObj  db;
 void menuCntrl(dbObj db, daeObjs dae, String apikey){
   int menuSel = 0;
   menuSel = Menu();
- 
+  
   switch(menuSel){
     case 1:
       DBMenu(db);
@@ -23,12 +24,16 @@ void menuCntrl(dbObj db, daeObjs dae, String apikey){
       RpcMenu(dae);
       break;
     case 3:
+      Caesar c2=new Caesar(2547832562734583824582353);
+      apikey = c2.encrypt("872314234CH2DSAECKD3d9OUT8ada2ECRYVaPTO90-a-ad");
+      var cache = new Cache();
+      cache.cachePref(apikey);
       print("APIKEY = $apikey");
       /// generate api key
       break;
     case 4:
       /// start server
-      var server = new Server();
+      var server = new Server(db,dae,apikey);
       break;
   }
 }

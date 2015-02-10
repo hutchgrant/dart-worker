@@ -7,11 +7,24 @@ library Server;
 
 import 'dart:io';
 import 'dart:convert' show JSON;
+import './objects/daeObj.dart';
+import './objects/dbObj.dart';
 
 class Server {
   
-  Server(){
-    HttpServer.bind(InternetAddress.LOOPBACK_IP_V4, 4042)
+  int port = 4042;
+  String IP = "127.0.0.1";
+  var db, daemons;
+  String apikey;
+  
+  Server(dbObj sql, daeObjs dae, String key){
+    apikey = key;
+    db = sql;
+    daemons = dae;
+    
+    print("Starting HTTP Server on $IP at Port: $port");
+
+    HttpServer.bind(IP, port)
            .then(listenForRequests)
            .catchError((e) => print('error: ${e.toString()}'));
   }

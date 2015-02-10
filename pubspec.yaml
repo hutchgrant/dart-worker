@@ -4,7 +4,11 @@ description: http work server ready to read get/post requests, utilizing a basic
 environment:
   sdk: '>=1.0.0 <2.0.0'
 dependencies:
+  bignum: any
   bitcoind_client: any
+  cipher: any
+  crypto: any
+  cryptoutils: any
   logging: any
   mongo_dart: any
 dev_dependencies:

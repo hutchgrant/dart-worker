@@ -130,6 +130,16 @@ class Cache {
    * INSERT api preferences e.g. apikey
    */
   void cachePref(String apikey){
-    
+    this.init();
+    var table = db.collection('pref');
+    db.open().then((_){
+      print(" INSERT apikey data into cache");
+      var data = [];
+      data.add({'apikey': apikey});
+         
+      return Future.forEach(data, (elem){
+        return table.insert(elem, writeConcern: WriteConcern.ACKNOWLEDGED);
+      });    
+    });
   }
 }
