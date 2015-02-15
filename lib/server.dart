@@ -65,7 +65,7 @@ class Server {
               var rpc = new rpcCntrl(daemons);
               rpc.call(decoded["coin"], decoded["action"], params:[decoded["params"][0],decoded["params"][1]]).then((result) => parse.parseResponse(result))
               .catchError((e){
-                print('Daemon connection error, make sure the daemon is running, or the rpc info is correct');
+                  print(parse.parseError(e));
               });
             }
           }

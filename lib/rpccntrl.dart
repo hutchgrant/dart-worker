@@ -60,11 +60,6 @@ class rpcCntrl {
      })
      .then((HttpClientResponse response)
        => response.fold('', (String prev, List el) => prev += new String.fromCharCodes(el)))
-       .catchError((e) {
-       if(debug) { this.log(coincode+' daemon error: ' + e.toString()); }
-       completer.completeError("test");
-       error = true;
-     })
      .then((String string_data) {
        if(debug) { this.log(coincode+' daemon response: $string_data'); }
        if(!error){
@@ -73,8 +68,14 @@ class rpcCntrl {
          if(_data['result'] != null) {
            completer.complete(_data);
          } else if (_data['error'] != null) {
-           completer.completeError(_data['error']);
+           completer.completeError(string_data);
          }
+       }
+     })
+     .catchError((e) {
+       if(debug) { this.log(coincode+' daemon error: ' + e.toString()); }
+       if(!error){
+        completer.completeError("rpc response error");
        }
      });
 
