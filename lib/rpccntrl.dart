@@ -37,6 +37,7 @@ class rpcCntrl {
   }
   
  Future call(String coincode, String method, { params: const []}) {
+   bool error = false;
    connect(coincode);
      final payload = JSON.encode({
        'jsonrpc': '1.0',
@@ -59,19 +60,22 @@ class rpcCntrl {
      })
      .then((HttpClientResponse response)
        => response.fold('', (String prev, List el) => prev += new String.fromCharCodes(el)))
+       .catchError((e) {
+       if(debug) { this.log(coincode+' daemon error: ' + e.toString()); }
+       completer.completeError("test");
+       error = true;
+     })
      .then((String string_data) {
        if(debug) { this.log(coincode+' daemon response: $string_data'); }
-
-       final _data = JSON.decode(string_data);
-       
-       if(_data['result'] != null) {
-         completer.complete(_data);
-       } else if (_data['error'] != null) {
-         completer.completeError(_data['error']);
+       if(!error){
+         final _data = JSON.decode(string_data);
+         
+         if(_data['result'] != null) {
+           completer.complete(_data);
+         } else if (_data['error'] != null) {
+           completer.completeError(_data['error']);
+         }
        }
-     }).catchError((e) {
-       if(debug) { this.log(coincode+' daemon error: ' + e.toString()); }
-       completer.completeError(e);
      });
 
      return completer.future;

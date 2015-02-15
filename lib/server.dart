@@ -10,6 +10,7 @@ import 'dart:convert' show JSON;
 import './objects/daeobj.dart';
 import './objects/dbobj.dart';
 import 'rpccntrl.dart';
+import 'parse.dart';
 
 class Server {
   
@@ -17,12 +18,13 @@ class Server {
   String IP = "127.0.0.1";
   var db, daemons;
   String apikey;
+  Parse parse;
   
   Server(dbObj sql, daeObjs dae, String key){
     apikey = key;
     db = sql;
     daemons = dae;
-    
+    parse = new Parse();
     print("Starting HTTP Server on $IP at Port: $port");
 
     HttpServer.bind(IP, port)
@@ -57,11 +59,15 @@ class Server {
         data.write(new String.fromCharCodes(buffer));
       }, onDone: () {
         var decoded = JSON.decode(data.toString());
-    
-        if (decoded.containsKey('apikey')) {
+        if (decoded.containsKey('apikey')  && decoded.containsKey('coin') && decoded.containsKey('action') && decoded.containsKey('params')) {
           if(decoded["apikey"] == apikey){
-            var rpc = new rpcCntrl(daemons);
-            rpc.call("BTC", "getbalance", params:['fee',0]).then((result) => print(result));
+            if(parse.checkCoinActionParams(daemons, decoded["coin"], decoded["action"], decoded["params"])){
+              var rpc = new rpcCntrl(daemons);
+              rpc.call(decoded["coin"], decoded["action"], params:[decoded["params"][0],decoded["params"][1]]).then((result) => parse.parseResponse(result))
+              .catchError((e){
+                print('Daemon connection error, make sure the daemon is running, or the rpc info is correct');
+              });
+            }
           }
           req.response.writeln('Working');
           req.response.close();

@@ -24,6 +24,13 @@ class daeObjs {
     this.daemons.add(nwDaeObj);
     this.size++;
   }
+  bool verifyCoinExists(String coincode){
+    for(int x= 0; x < size; x++){
+      if(daemons.elementAt(x).dCoin == coincode){
+        return true;
+      }
+    }
+  }
   daeObj grabByCoin(String coincode){
     for(int x= 0; x < size; x++){
       if(daemons.elementAt(x).dCoin == coincode){
