@@ -11,6 +11,7 @@ import './objects/daeobj.dart';
 import './objects/dbobj.dart';
 import 'rpccntrl.dart';
 import 'parse.dart';
+import 'dbconnect.dart';
 
 class Server {
   
@@ -21,11 +22,13 @@ class Server {
   Parse parse;
   String error;
   bool err;
+  dbConnect dbConn;
   
   Server(dbObj sql, daeObjs dae, String key){
     apikey = key;
     db = sql;
     daemons = dae;
+    dbConn = new dbConnect(sql);
     parse = new Parse();
     print("Starting HTTP Server on $IP at Port: $port");
 
@@ -68,7 +71,7 @@ class Server {
           if(decoded["apikey"] == apikey){
             if(parse.checkCoinActionParams(daemons, decoded["coin"], decoded["action"], decoded["params"])){
               var rpc = new rpcCntrl(daemons);
-              rpc.call(decoded["coin"], decoded["action"], decoded["params"]).then((result) => parse.parseResponse(result))
+              rpc.call(decoded["coin"], decoded["action"], decoded["params"]).then((result) => parse.parseResponse(result, dbConn))
               .catchError((e){
                   error = parse.parseError(e);
                   print(error);

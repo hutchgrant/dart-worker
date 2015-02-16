@@ -1,9 +1,12 @@
+// Copyright (c) 2015, Grant Hutchinson. All rights reserved. Use of this source code
+// is governed by a BSD-style license that can be found in the LICENSE file.
 library parse;
 
 import 'dart:io';
 import './objects/daeobj.dart';
+import './objects/wallet.dart';
 import 'dart:convert' show JSON;
-
+import 'dbconnect.dart';
 
 class Parse {
 
@@ -16,10 +19,30 @@ Parse(){
 /*
  * Parse the RPC Call response
  */
-String parseResponse(var result){
+String parseResponse(var coin, var action, var result, dbConnect db){
 
-//  req.response.writeln('[{"result":{"error":"${error}"}}]');
-// req.response.close();
+  String baseResult = "";
+  double dblResult = 0.0;
+  
+  switch(action){
+    case "getbalance":
+      wallet wall = new wallet();
+      baseResult = result['result'].toString();
+      dblResult = double.parse(baseResult);
+      wall.insert(1, coin, "", "", dblResult, 0.0, 1, "");
+      db.updateConfirmedBalance(wall);
+    break;
+    case "getnewaddress":
+      wallet wall = new wallet();
+      baseResult = result['result'].toString();
+      dblResult = double.parse(baseResult);
+      wall.insert(1, coin, "", "", dblResult, 0.0, 1, "");
+      db.addDefaultWallet(wall);
+    break;
+    case "getreceivedbyaddress":
+    break;
+  }
+
   print(result['result']);
   return result['result'].toString();
 }
