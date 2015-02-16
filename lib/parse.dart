@@ -16,8 +16,12 @@ Parse(){
 /*
  * Parse the RPC Call response
  */
-void parseResponse(var result){
+String parseResponse(var result){
+
+//  req.response.writeln('[{"result":{"error":"${error}"}}]');
+// req.response.close();
   print(result['result']);
+  return result['result'].toString();
 }
 
 /*
@@ -76,11 +80,13 @@ void checkParams(var params){
 }
 
 String parseError(String e){
+  
+  String Msg = "";
+  if(e.startsWith("{")){
   var errorDecode = JSON.decode(e.toString());
   var sErrorCode = errorDecode["error"]["code"];
   var sErrorMsg = errorDecode["error"]["message"];
-  
-  String Msg = "";
+
 
       if(sErrorCode == -12){     ///for refill key
           Msg =" REFILLING KEYS --------------------------" ;
@@ -101,7 +107,10 @@ String parseError(String e){
       }else{
          Msg = " the daemon appears to be offline or there are no more work orders";
       }
-      return Msg;
+  }else{
+    Msg = e;
+  }
+  return Msg;
 }
 
 

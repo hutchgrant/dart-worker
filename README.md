@@ -48,3 +48,12 @@ Options
 
 
 Calls are made from a front end api, utilizing a POST request to a REST api, accompanied by the worker's generated key(see above).  
+
+Connect to the Server using a client POST function similar to this:
+```
+String url = "http://127.0.0.1:4042"
+request = new HttpRequest();
+request.onReadyStateChange.listen(onData);
+request.open('POST', url);
+request.send('{"apikey":"$apikey", "coin":"BTC", "action":"getbalance", "params":["fee"] }');
+```

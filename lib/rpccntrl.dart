@@ -36,8 +36,9 @@ class rpcCntrl {
     debug = this.log != null;
   }
   
- Future call(String coincode, String method, { params: const []}) {
+ Future call(String coincode, String method, List paramList) {
    bool error = false;
+   List params = paramList;
    connect(coincode);
      final payload = JSON.encode({
        'jsonrpc': '1.0',
@@ -45,6 +46,7 @@ class rpcCntrl {
        'params': params,
        'id': new DateTime.now().millisecondsSinceEpoch
      });
+     print(payload);
      if(debug) { this.log(coincode+' daemon request: ' + payload); }
 
      final completer = new Completer();
@@ -64,7 +66,7 @@ class rpcCntrl {
        if(debug) { this.log(coincode+' daemon response: $string_data'); }
        if(!error){
          final _data = JSON.decode(string_data);
-         
+         print(_data);
          if(_data['result'] != null) {
            completer.complete(_data);
          } else if (_data['error'] != null) {

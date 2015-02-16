@@ -19,6 +19,8 @@ class Server {
   var db, daemons;
   String apikey;
   Parse parse;
+  String error;
+  bool err;
   
   Server(dbObj sql, daeObjs dae, String key){
     apikey = key;
@@ -34,6 +36,10 @@ class Server {
 
     listenForRequests(_server) {
       _server.listen((HttpRequest request) {
+
+      error = "";
+      err = false;
+
         switch (request.method) {
           case 'POST':
             handlePost(request);
@@ -52,7 +58,6 @@ class Server {
     
     void handlePost(HttpRequest req) {
       StringBuffer data = new StringBuffer();
-    
       addCorsHeaders(req.response);
     
       req.listen((buffer) {
@@ -63,15 +68,21 @@ class Server {
           if(decoded["apikey"] == apikey){
             if(parse.checkCoinActionParams(daemons, decoded["coin"], decoded["action"], decoded["params"])){
               var rpc = new rpcCntrl(daemons);
-              rpc.call(decoded["coin"], decoded["action"], params:[decoded["params"][0],decoded["params"][1]]).then((result) => parse.parseResponse(result))
+              rpc.call(decoded["coin"], decoded["action"], decoded["params"]).then((result) => parse.parseResponse(result))
               .catchError((e){
-                  print(parse.parseError(e));
+                  error = parse.parseError(e);
+                  print(error);
+              }).then((result2){
+                  if(error.isNotEmpty){
+                    req.response.writeln('[{"result":{"error":"${error}"}}]');
+                  }else{
+                    req.response.writeln('[{"result":"${result2}"}]');
+                  }
+                 req.response.close();
               });
             }
           }
-          req.response.writeln('Working');
-          req.response.close();
-        } 
+        }
       }, onError: (_) {
         print('Request listen error.');
       });
