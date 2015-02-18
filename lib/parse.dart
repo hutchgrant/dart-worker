@@ -2,6 +2,7 @@
 // is governed by a BSD-style license that can be found in the LICENSE file.
 library parse;
 
+import 'dart:async';
 import 'dart:io';
 import './objects/daeobj.dart';
 import './objects/wallet.dart';
@@ -19,27 +20,52 @@ Parse(){
 /*
  * Parse the RPC Call response
  */
-String parseResponse(var coin, var action, var result, dbConnect db){
+String parseResponse(var params, var result, dbConnect db){
 
   String baseResult = "";
   double dblResult = 0.0;
   
-  switch(action){
+  switch( params["action"]){
     case "getbalance":
       wallet wall = new wallet();
       baseResult = result['result'].toString();
       dblResult = double.parse(baseResult);
-      wall.insert(1, coin, "", "", dblResult, 0.0, 1, "");
-      db.updateConfirmedBalance(wall);
+      wall.insert(params["uid"], params["coin"], "", "", dblResult, 0.0, 1, "");
+      
+      Future balanceUpdate() => new Future.value(db.updateConfirmedBalance(wall));
+      balanceUpdate().then((_){
+        print("balance updated");
+      });
     break;
     case "getnewaddress":
       wallet wall = new wallet();
       baseResult = result['result'].toString();
-      dblResult = double.parse(baseResult);
-      wall.insert(1, coin, "", "", dblResult, 0.0, 1, "");
-      db.addDefaultWallet(wall);
+      
+      wall.insert(params["uid"], params["coin"], "", baseResult, 0.0, 0.0, 1, "");
+      
+      Future addNewAddress() => new Future.value(db.addDefaultWallet(wall));
+      addNewAddress().then((_){
+        print("new address added");
+      });
     break;
     case "getreceivedbyaddress":
+      wallet wall = new wallet();
+      baseResult = result['result'].toString();
+      dblResult = double.parse(baseResult);
+      wall.insert(params["uid"], params["coin"], "", params["address"], dblResult, 0.0, params["confirms"], "");
+      
+      Future addNewAddress() => new Future.value(db.addDefaultWallet(wall));
+      addNewAddress().then((_){
+        print("amount received by address updated");
+      });
+    break;
+    case "move":
+    break;
+    case "unlock":
+    break;
+    case "lock":
+    break;
+    case "settxfee":
     break;
   }
 

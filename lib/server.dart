@@ -62,7 +62,7 @@ class Server {
     void handlePost(HttpRequest req) {
       StringBuffer data = new StringBuffer();
       addCorsHeaders(req.response);
-    
+      
       req.listen((buffer) {
         data.write(new String.fromCharCodes(buffer));
       }, onDone: () {
@@ -70,24 +70,40 @@ class Server {
         if (decoded.containsKey('apikey')  && decoded.containsKey('coin') && decoded.containsKey('action') && decoded.containsKey('params')) {
           if(decoded["apikey"] == apikey){
             if(parse.checkCoinActionParams(daemons, decoded["coin"], decoded["action"], decoded["params"])){
-              var rpc = new rpcCntrl(daemons);
-              rpc.call(decoded["coin"], decoded["action"], decoded["params"]).then((result) => parse.parseResponse(result, dbConn))
-              .catchError((e){
-                  error = parse.parseError(e);
-                  print(error);
-              }).then((result2){
-                  if(error.isNotEmpty){
-                    req.response.writeln('[{"result":{"error":"${error}"}}]');
-                  }else{
-                    req.response.writeln('[{"result":"${result2}"}]');
-                  }
-                 req.response.close();
-              });
+                rpcHandler(req, decoded);
             }
           }
         }
       }, onError: (_) {
         print('Request listen error.');
+      });
+    }
+    
+    void rpcHandler(HttpRequest req, var decoded){
+      var rpc = new rpcCntrl(daemons);
+      var params = new Map();
+
+      params["coin"] = decoded["coin"];
+      params["action"] = decoded["action"];
+      params["uid"] = decoded["params"]["uid"];
+      if(decoded["params"].containsKey("address")){ params["address"] = decoded["params"]["address"]; }
+      if(decoded["params"].containsKey("account")){ params["account"] = decoded["params"]["account"]; }
+      if(decoded["params"].containsKey("recipient")){ params["recipient"] = decoded["params"]["recipient"]; }
+      if(decoded["params"].containsKey("amount")){ params["amount"] = decoded["params"]["amount"]; }
+      if(decoded["params"].containsKey("confirms")){ params["confirms"] = decoded["params"]["confirms"]; }
+
+      rpc.call(decoded["coin"], decoded["action"], params).then((result) => parse.parseResponse(params, result, dbConn))
+      
+      .catchError((e){
+          error = parse.parseError(e.toString());
+          print(error);
+      }).then((result2){
+          if(error.isNotEmpty){
+            req.response.writeln('[{"status":"error", "result":"${error}"}]');
+          }else{
+            req.response.writeln('[{"status":"success", "result":"${result2}"}]');
+          }
+         req.response.close();
       });
     }
     

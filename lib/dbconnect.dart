@@ -22,22 +22,19 @@ class dbConnect{
   }
   
   void init(){
-   /// con = new Connection();
-   // con.connect(USER, PASS, NAME, PORT, IP).then((nothing) {
    con = new ConnectionPool(host: '${IP}', port: PORT, user: '${USER}', password: '${PASS}', db: '${NAME}', max: 5);
   }
   
   void updateConfirmedBalance(wallet wall){
     init();
-    con.prepare('UPDATE ccdev_balance SET coin_balance = ? WHERE uid = ? AND coin = ?').then((query) {
+    con.prepare('UPDATE ccdev_balance SET coin_balance = ? WHERE uid = ? AND coin_code = ?').then((query) {
       query.execute([wall.WalletAmount, wall.WalletUser, wall.WalletCoin]).then((result) {
-        print(result);
       });
     });
   }
   void updatePendingBalance(wallet wall){
     init();
-    con.prepare('UPDATE ccdev_balance SET coin_pending = ? WHERE uid = ? AND coin = ?').then((query) {
+    con.prepare('UPDATE ccdev_balance SET coin_pending = ? WHERE uid = ? AND coin_code = ?').then((query) {
       query.execute([wall.WalletAmount, wall.WalletUser, wall.WalletCoin]).then((result) {
         print(result);
       });
@@ -45,7 +42,7 @@ class dbConnect{
   }
   void updateWithdrawBalance(wallet wall){
     init();
-    con.prepare('UPDATE ccdev_balance SET coin_withdraw = ? WHERE uid = ? AND coin = ?').then((query) {
+    con.prepare('UPDATE ccdev_balance SET coin_withdraw = ? WHERE uid = ? AND coin_code = ?').then((query) {
       query.execute([wall.WalletAmount, wall.WalletUser, wall.WalletCoin]).then((result) {
         print(result);
       });
@@ -53,7 +50,7 @@ class dbConnect{
   }
   void updateAutopayBalance(wallet wall){
     init();
-    con.prepare('UPDATE ccdev_balance SET coin_autopay = ?, coin_autoaddress WHERE uid = ? AND coin = ?').then((query) {
+    con.prepare('UPDATE ccdev_balance SET coin_autopay = ?, coin_autoaddress WHERE uid = ? AND coin_code = ?').then((query) {
       query.execute([wall.WalletAmount, wall.WalletAddress, wall.WalletUser, wall.WalletCoin]).then((result) {
         print(result);
       });
@@ -69,10 +66,8 @@ class dbConnect{
   }
   void addDefaultWallet(wallet wall){
     init();
-    con.prepare('INSERT into ccdev_wallets (basic_id, bundle_type, uid, orderid, balance_total, pending_total, fee_total, coins_enabled, walletaddress, ' +
-        'walletaccount, last_processed_id, confirm, count, flag, timestamp) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW()').then((query) {
-        query.execute(['', 'ccdev_coin', wall.WalletUser, 0,0,0, wall.WalletCoin, wall.WalletAddress, wall.WalletAccount, 0, 0, 0, ""]).then((result) {
-        print(result);
+    con.prepare('INSERT into ccdev_wallets (basic_id, bundle_type, uid, orderid, balance_total, pending_total, fee_total, coins_enabled, walletaddress, walletaccount, last_processed_id, confirm, count, flag, timestamp) values (NULL, "ccdev_coin", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW())').then((query) {
+        query.execute([wall.WalletUser, 0,0.0,0.0,0.0, wall.WalletCoin, wall.WalletAddress, wall.WalletAccount, 0, 0, 0, "n/a"]).then((result) {
       });
     });
   }

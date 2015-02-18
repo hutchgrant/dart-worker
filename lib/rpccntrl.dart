@@ -36,9 +36,35 @@ class rpcCntrl {
     debug = this.log != null;
   }
   
- Future call(String coincode, String method, List paramList) {
+  List getRPCParams(var params){
+    List rpclist;
+    
+    switch(params["action"]){
+      case "getnewaddress":
+        rpclist = [params["account"]];
+      break;
+      case "getbalance":
+        rpclist = [params["account"]];
+      break;
+      case "getreceivedbyaddress":
+        rpclist = [params["address"], params["confirms"]];
+      break;
+      case "sendfrom":
+        rpclist = [params["account"], params["recipient"], params["amount"]];
+      break;
+      case "move":
+        rpclist = [params["account"], params["recipient"], params["amount"]];
+      break;
+      case "settxfee":
+        rpclist = [params["amount"]];
+      break;
+    }
+    return rpclist;
+  }
+  
+ Future call(String coincode, String method, var paramList) {
    bool error = false;
-   List params = paramList;
+   List params = getRPCParams(paramList);
    connect(coincode);
      final payload = JSON.encode({
        'jsonrpc': '1.0',
@@ -77,7 +103,7 @@ class rpcCntrl {
      .catchError((e) {
        if(debug) { this.log(coincode+' daemon error: ' + e.toString()); }
        if(!error){
-        completer.completeError("rpc response error");
+        completer.completeError("Daemon RPC Connection Error, check your daemons is running.");
        }
      });
 

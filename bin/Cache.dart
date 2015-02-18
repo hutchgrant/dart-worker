@@ -11,14 +11,14 @@ import '../lib/objects/dbobj.dart';
 import 'dart:async';
 
 class Cache {
-  
-  Db db;
+  /* INSERT YOUR MONGODB ACCOUNT AND DB */
   String dbServer = "127.0.0.1";
   String dbPort = "27017";
   String dbName = "testdb";
-  String usrName = "default";
-  String usrPass = "root";  double rate = 0.0;
+  String usrName = "";
+  String usrPass = "";  
   
+  Db db;
   Cache(){
   }
   
