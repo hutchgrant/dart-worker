@@ -3,15 +3,16 @@
 library parse;
 
 import 'dart:async';
-import 'dart:io';
 import './objects/daeobj.dart';
 import './objects/wallet.dart';
 import 'dart:convert' show JSON;
 import 'dbconnect.dart';
+import 'rpccntrl.dart';
 
 class Parse {
 
 String error;
+rpcCntrl rpc;
 
 Parse(){
   error = "";
@@ -59,13 +60,16 @@ String parseResponse(var params, var result, dbConnect db){
         print("amount received by address updated");
       });
     break;
+    case "walletpassphrase":
+      result['result'] = "unlocked";
+    break;
     case "move":
     break;
-    case "unlock":
-    break;
-    case "lock":
+    case "walletlock":
+      result['result'] = "locked";
     break;
     case "settxfee":
+      result['result'] = "fee set";
     break;
   }
 
@@ -114,6 +118,7 @@ bool checkAction(var method){
   }else if(method == "service_charge"){
   }else if(method == "move"){
   }else if(method == "getaccount"){
+  }else if(method == "walletpassphrase"){
   }else{
     error = "incorrect action";
     return false;
@@ -151,7 +156,7 @@ String parseError(String e){
          Msg = "error code : $sErrorCode";
       }else if(sErrorCode == -6){
          Msg = "WARNING empty wallet  code: $sErrorCode";
-      }else if(sErrorCode == -3){
+      }else if(sErrorCode == -4){
          Msg = "WARNING Send Amount to small!!  code: $sErrorCode";
       }else{
          Msg = " the daemon appears to be offline or there are no more work orders";

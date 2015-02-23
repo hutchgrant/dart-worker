@@ -30,6 +30,7 @@ class daeObjs {
         return true;
       }
     }
+    return false;
   }
   daeObj grabByCoin(String coincode){
     for(int x= 0; x < size; x++){
@@ -73,6 +74,7 @@ class daeObj {
       this.rpcCoin = coin;
       this.rpcUser = user;
       this.rpcPass = pass;
+      this.rpcWallPass = walPass;
       this.rpcServer = serv;
       this.rpcPort = port;
       this.rpcFee = fee;

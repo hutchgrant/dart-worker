@@ -33,7 +33,7 @@ void menuCntrl(dbObj db, daeObjs dae, String apikey){
       break;
     case 4:
       /// start server
-      var server = new Server(db,dae,apikey);
+    //  var server = new Server(db,dae,apikey);
       break;
   }
 }

@@ -14,7 +14,7 @@ class Cache {
   /* INSERT YOUR MONGODB ACCOUNT AND DB */
   String dbServer = "127.0.0.1";
   String dbPort = "27017";
-  String dbName = "testdb";
+  String dbName = "";
   String usrName = "";
   String usrPass = "";  
   

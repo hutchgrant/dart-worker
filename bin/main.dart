@@ -3,10 +3,10 @@
 
 import 'dart:async';
 import '../lib/menu.dart';
-import '../lib/server.dart';
 import 'Cache.dart';
 import '../lib/objects/daeobj.dart';
 import '../lib/objects/dbobj.dart';
+import '../lib/server.dart';
 
 
 main() {
@@ -26,7 +26,7 @@ main() {
         /// if not started with any args
         menuCntrl(db, daemons, value);
         /// 5.  start server
-        // var server = new Server(db, daemons, apikey);
+        var server = new Server(db, daemons, apikey);
       });
     });
   });

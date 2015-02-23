@@ -36,10 +36,10 @@ class rpcCntrl {
     debug = this.log != null;
   }
   
-  List getRPCParams(var params){
+  List getRPCParams(String method, var params){
     List rpclist;
     
-    switch(params["action"]){
+    switch(method){
       case "getnewaddress":
         rpclist = [params["account"]];
       break;
@@ -58,13 +58,17 @@ class rpcCntrl {
       case "settxfee":
         rpclist = [params["amount"]];
       break;
+      case "walletpassphrase":
+        params["timeout"] = 100;
+        rpclist = [params["passphrase"], params["timeout"]];
+      break;
     }
     return rpclist;
   }
   
  Future call(String coincode, String method, var paramList) {
    bool error = false;
-   List params = getRPCParams(paramList);
+   List params = getRPCParams(method, paramList);
    connect(coincode);
      final payload = JSON.encode({
        'jsonrpc': '1.0',
@@ -97,6 +101,8 @@ class rpcCntrl {
            completer.complete(_data);
          } else if (_data['error'] != null) {
            completer.completeError(string_data);
+         }else if(_data['error'] == null){
+           completer.complete(_data);
          }
        }
      })
