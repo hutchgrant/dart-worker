@@ -2,7 +2,7 @@
 // is governed by a BSD-style license that can be found in the LICENSE file.
 
 
-import '../lib/ccserver.dart';
+import 'package:dart_worker/ccserver.dart';
 
 main(List<String> arguments){
   
@@ -12,5 +12,16 @@ main(List<String> arguments){
       menu = false;
     } 
   }
-  var server = new ccServer(menu);
+  
+  var srvConfig = new Map();
+  ///// HTTP Server Setup
+  srvConfig["server_ip"] = "127.0.0.1";
+  srvConfig["server_port"] = 4042;
+  ///// Mongo Config
+  srvConfig["mongo_ip"] = "127.0.0.1";
+  srvConfig["mongo_port"] = "27017";
+  srvConfig["mongo_table"] = "";
+  srvConfig["mongo_user"] ="";
+  srvConfig["mongo_pass"] = "";
+  var server = new ccServer(menu, srvConfig);
 }

@@ -5,49 +5,47 @@
 library daeObjs;
 
 class daeObjs {
-  
+
   List<daeObj> daemons;
   int size;
-  
-  daeObjs(){
+
+  daeObjs() {
     daemons = new List<daeObj>();
     size = 0;
   }
-  
-  void insert(String coin, String user, String pass, String serv, int port, 
-           String walPass, double fee, double txfee, double rate, 
-           int mxConf, bool enable){
-    
+
+  void insert(String coin, String user, String pass, String serv, int port, String walPass, double fee, double txfee, double rate, int mxConf, bool enable) {
+
     var nwDaeObj = new daeObj();
-    nwDaeObj.insert(coin, user, pass, serv, port, walPass, fee, txfee,
-                    rate, mxConf, enable);
+    nwDaeObj.insert(coin, user, pass, serv, port, walPass, fee, txfee, rate, mxConf, enable);
     this.daemons.add(nwDaeObj);
     this.size++;
   }
-  bool verifyCoinExists(String coincode){
-    for(int x= 0; x < size; x++){
-      if(daemons.elementAt(x).dCoin == coincode){
+  bool verifyCoinExists(String coincode) {
+    for (int x = 0; x < size; x++) {
+      if (daemons.elementAt(x).dCoin == coincode) {
         return true;
       }
     }
     return false;
   }
-  daeObj grabByCoin(String coincode){
-    for(int x= 0; x < size; x++){
-      if(daemons.elementAt(x).dCoin == coincode){
+  daeObj grabByCoin(String coincode) {
+    for (int x = 0; x < size; x++) {
+      if (daemons.elementAt(x).dCoin == coincode) {
         return daemons.elementAt(x);
       }
     }
+    return new daeObj();
   }
-  daeObj grabByIdx(int index){
+  daeObj grabByIdx(int index) {
     return daemons.elementAt(index);
   }
-  void displayAll(){
-    for(int x=0; x<size; x++){
+  void displayAll() {
+    for (int x = 0; x < size; x++) {
       daemons.elementAt(x).display();
     }
   }
-  
+
 }
 
 class daeObj {
@@ -55,8 +53,8 @@ class daeObj {
   int dPort, dMxConf;
   double dRate, dFee, dTxFee;
   bool dEnabled;
-  
-  daeObj(){
+
+  daeObj() {
     dUser = "";
     dPass = "";
     dServer = "";
@@ -67,22 +65,20 @@ class daeObj {
     dTxFee = 0.0;
     dEnabled = true;
   }
-  
-  void insert(String coin, String user, String pass, String serv, int port, 
-        String walPass, double fee, double txfee, double rate, 
-        int mxConf, bool enable){
-      this.rpcCoin = coin;
-      this.rpcUser = user;
-      this.rpcPass = pass;
-      this.rpcWallPass = walPass;
-      this.rpcServer = serv;
-      this.rpcPort = port;
-      this.rpcFee = fee;
-      this.rpcTxFee = txfee;
-      this.rpcMaxConf = mxConf;
-      this.rpcEnable = enable;
+
+  void insert(String coin, String user, String pass, String serv, int port, String walPass, double fee, double txfee, double rate, int mxConf, bool enable) {
+    this.rpcCoin = coin;
+    this.rpcUser = user;
+    this.rpcPass = pass;
+    this.rpcWallPass = walPass;
+    this.rpcServer = serv;
+    this.rpcPort = port;
+    this.rpcFee = fee;
+    this.rpcTxFee = txfee;
+    this.rpcMaxConf = mxConf;
+    this.rpcEnable = enable;
   }
-  void display(){
+  void display() {
     print("Coin:$dCoin User:$dUser Pass:$dPass ");
     print("Server:$dServer Port:$dPort ");
     print("WalletPass:$dWalPas ");
@@ -90,7 +86,7 @@ class daeObj {
     print("MaxConfirm:$dMxConf");
     print("Enabled:$dEnabled");
   }
-  
+
   void set rpcCoin(String coin) {
     this.dCoin = coin;
   }
@@ -124,7 +120,7 @@ class daeObj {
   void set rpcEnable(bool enabled) {
     this.dEnabled = enabled;
   }
-  
+
   String get rpcCoin => dCoin;
   String get rpcUser => dUser;
   String get rpcPass => dPass;
@@ -137,4 +133,3 @@ class daeObj {
   int get rpcMaxConf => dMxConf;
   bool get rpcEnable => dEnabled;
 }
-

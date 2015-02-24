@@ -1,7 +1,7 @@
 name: dart_worker
-version: 0.0.7
+version: 0.0.8
 author: Grant Hutchinson<h.g.utchinson@gmail.com>
-description: http cryptocurrency work server. Ready to read get/post requests, conduct rpc calls, utilizing a basic mongodb cache and remote mysql cache.
+description: http cryptocurrency work server. Ready to read post requests, conduct rpc calls, utilizing a basic mongodb cache and remote mysql cache.
 homepage: https://github.com/hutchgrant/dart-worker
 environment:
   sdk: '>=1.0.0 <2.0.0'
@@ -10,4 +10,3 @@ dependencies:
   sqljocky: '>=0.11.0 <0.12.0'
 dev_dependencies:
   mongo_dart: any
-  unittest: any

@@ -8,16 +8,14 @@ library Server;
 import 'dart:io';
 import 'dart:async';
 import 'dart:convert' show JSON;
-import './objects/daeobj.dart';
-import './objects/dbobj.dart';
+import 'objects/daeobj.dart';
+import 'objects/dbobj.dart';
 import 'rpccntrl.dart';
 import 'parse.dart';
 import 'dbconnect.dart';
 
 class Server {
 
-  int port = 4042;
-  String IP = "127.0.0.1";
   var db, daemons;
   String apikey;
   Parse parse;
@@ -30,15 +28,17 @@ class Server {
   /*
    *  Server Constructor
    */
-  Server(dbObj sql, daeObjs dae, String key) {
+  Server(dbObj sql, daeObjs dae, String key, var config) {
+    String IP = config["server_ip"];
+    int PORT = config["server_port"];
     apikey = key;
     db = sql;
     daemons = dae;
     dbConn = new dbConnect(sql);
     parse = new Parse();
-    setAllTxFees(dae).then((_){
-      print("Starting HTTP Server on $IP at Port: $port");
-      HttpServer.bind(IP, port).then(listenForRequests).catchError((e) => print('error: ${e.toString()}'));
+    setAllTxFees(dae).then((_) {
+      print("Starting HTTP Server on $IP at Port: $PORT");
+      HttpServer.bind(IP, PORT).then(listenForRequests).catchError((e) => print('error: ${e.toString()}'));
     });
 
   }
@@ -89,7 +89,7 @@ class Server {
       print('Request listen error.');
     });
   }
-  
+
   /*
    *  Prepare and create the initial RPC request, when socket connection received
    */
@@ -122,24 +122,23 @@ class Server {
       respond(req, rpc, decoded, daemons, params, result);
     });
   }
-  
+
   /*
    *  Handle all the RPC default Coin fees, 
    * for now only calling on initialization of server
    */
-  Future setAllTxFees(daeObjs dae){
+  Future setAllTxFees(daeObjs dae) {
     final completer = new Completer();
     var params = new Map();
     var rpc = new rpcCntrl(dae);
-    for(int x=0; x<dae.size; x++){
+    for (int x = 0; x < dae.size; x++) {
       params["amount"] = dae.grabByIdx(x).dTxFee;
-      
+
       rpc.call(dae.grabByIdx(x).dCoin, "settxfee", params).then((result) => parse.parseResponse(params, result, dbConn)).catchError((e) {
         parseError(e);
-      })
-      .then((result) {
+      }).then((result) {
         print(dae.grabByIdx(x).dCoin + " txfee set and coin enabled");
-        if(x == dae.size-1){
+        if (x == dae.size - 1) {
           completer.complete();
         }
       });
@@ -162,7 +161,8 @@ class Server {
    */
   void respond(HttpRequest req, rpcCntrl rpc, var decoded, daeObjs daemons, var params, var result) {
     if (error.isNotEmpty) {
-      if (errorcode["error"]["code"] == -13) {    /// Unlock wallet on unlock error
+      if (errorcode["error"]["code"] == -13) {
+        /// Unlock wallet on unlock error
         errorcode = "";
         error = "";
         print("WALLET UNLOCKING-----------------------");
@@ -203,7 +203,7 @@ class Server {
     req.response.close();
 
   }
-  
+
   /*
    * Return Specific response through HTTP request
    */
