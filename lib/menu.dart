@@ -4,7 +4,7 @@
 import 'dart:io';
 import 'objects/daeobj.dart';
 import 'objects/dbobj.dart';
-import '../bin/Cache.dart';
+import 'cache.dart';
 import 'server.dart';
 import 'cipher.dart';
 

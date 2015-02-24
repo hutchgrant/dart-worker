@@ -42,37 +42,18 @@ Library Usage:
 * Cache + Menu + Server:
 You need to add the following to your main to retrieve from the cache, start the menu/server.
 ```
-main(List<String> arguments) {
+import '../lib/ccserver.dart';
 
+main(List<String> arguments){
+  
   bool menu = true;
   if(arguments.length != 0){
      if(arguments[0] == "-server"){
       menu = false;
     } 
   }
-  
-  var cache = new Cache();
-  var daemons = new daeObjs();
-  var db = new dbObj();
-  String apikey = "";
-
-  Future<daeObjs> daeFut() => new Future.value(cache.getCoins());
-  Future<dbObj> dbFut() => new Future.value(cache.getDB());
-  Future<String> prefFut() => new Future.value(cache.getPref());
-
-  daeFut().then((daemons){
-    dbFut().then((db){
-      prefFut().then((value){
-        apikey = value;
-        if(menu == true){
-          menuCntrl(db, daemons, value);
-        }else{
-          var server = new Server(db, daemons, apikey);
-        }
-      });
-    });
-  });
-
+  var server = new ccServer(menu);
+}
 ```
 
 * Objects:

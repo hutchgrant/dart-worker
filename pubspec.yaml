@@ -1,5 +1,5 @@
 name: dart_worker
-version: 0.0.6
+version: 0.0.7
 author: Grant Hutchinson<h.g.utchinson@gmail.com>
 description: http cryptocurrency work server. Ready to read get/post requests, conduct rpc calls, utilizing a basic mongodb cache and remote mysql cache.
 homepage: https://github.com/hutchgrant/dart-worker
