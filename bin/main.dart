@@ -9,7 +9,15 @@ import '../lib/objects/dbobj.dart';
 import '../lib/server.dart';
 
 
-main() {
+main(List<String> arguments) {
+
+  bool menu = true;
+  if(arguments.length != 0){
+     if(arguments[0] == "-server"){
+      menu = false;
+    } 
+  }
+  
   var cache = new Cache();
   var daemons = new daeObjs();
   var db = new dbObj();
@@ -23,10 +31,11 @@ main() {
     dbFut().then((db){
       prefFut().then((value){
         apikey = value;
-        /// if not started with any args
-        menuCntrl(db, daemons, value);
-        /// 5.  start server
-        var server = new Server(db, daemons, apikey);
+        if(menu == true){
+          menuCntrl(db, daemons, value);
+        }else{
+          var server = new Server(db, daemons, apikey);
+        }
       });
     });
   });
