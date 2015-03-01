@@ -12,6 +12,7 @@ git clone https://github.com/hutchgrant/dart-worker
 cd ./dart-worker
 pub get
 ```
+
 Run:
 ```
 dart main.dart 
@@ -19,52 +20,45 @@ note: you can launch server standalone for a service etc with:
 dart main.dart -server
 ```
 
-Local cache
-==============
-MongoDB config options are in the file ./dart-worker/bin/Cache.dart
-You will need to create a new database and user.
-
-Remote(or local) site and Database
-==============
-```
-sudo apt-get install git drush phpmyadmint curl php5-curl apache2 mysql-server mysql-client
-
-
-Follow instructions at drupal menu, install.
-cd /var/www/site/sites/all/ && git clone https://github.com/CheckoutCrypto/site.git
-git submodule init && git submodule update
-Login as admin, enable all modules, fix configurations e.g. smtp, site config, theme settings, blocks, etc.
-```
-Detailed site instructions on CheckoutCrypto's site installation and configuration can be found in that repository's readme https://github.com/CheckoutCrypto/site
-
 Library Usage:
 ===============
 * Cache + Menu + Server:
-You need to add the following to your main to retrieve from the cache, start the menu/server.
+You need to add the following to your main, to configure the cache and start the menu/server:
 ```
-import '../lib/ccserver.dart';
+import 'package:dart_worker/ccserver.dart';
 
 main(List<String> arguments){
   
   bool menu = true;
+  /// add -server to startup for standalone server
   if(arguments.length != 0){
-     if(arguments[0] == "-server"){
+     if(arguments[0] == "-server"){   
       menu = false;
     } 
   }
-  var server = new ccServer(menu);
+  
+  var srvConfig = new Map();
+  ///// HTTP Server Setup
+  srvConfig["server_ip"] = "127.0.0.1";
+  srvConfig["server_port"] = 4042;
+  ///// Mongo Config
+  srvConfig["mongo_ip"] = "127.0.0.1";
+  srvConfig["mongo_port"] = "27017";
+  srvConfig["mongo_table"] = "";
+  srvConfig["mongo_user"] ="";
+  srvConfig["mongo_pass"] = "";
+  ///// Start Server
+  var server = new ccServer(menu, srvConfig);
 }
 ```
-
 * Objects:
 ```
 daeObj() - Daemon Object
 
 dbObj() - MySQL Database Object
 
-wallet() - Wallet Object, for moving all the the wallet variables
+wallet() - Wallet Object
 ```
-
 
 Configure:
 =============
@@ -77,9 +71,9 @@ Options
 4) Start Server
 ```
 
-
 1. Add a remote(CheckoutCrypto drupal site) DB to send the results of api queries</li>
 2. Add each cryptocurrency RPC config information  
+
 - Coin(short form)<
 - RPC User
 - RPC Password
@@ -89,9 +83,9 @@ Options
 - Rate(set by cron later)
 - Max Confirmation - The confirm at which a trade, deposit, withdrawal, is made
 - Enable/Disable(true/false) 
+
 3. Generate an API key
 4. Start the HTTP Server - Set IP and port in ./lib/server.dart
-
 
 Client
 ===========
@@ -106,3 +100,16 @@ request.onReadyStateChange.listen(onData);
 request.open('POST', url);
 request.send('{"apikey":"$apikey", "coin":"BTC", "action":"getnewaddress", "params":{"uid":1, "account":"fee", "address":"", "recipient":"", "amount":""} }');
 ```
+
+Remote(or local) site and Database
+==============
+```
+sudo apt-get install git drush phpmyadmint curl php5-curl apache2 mysql-server mysql-client
+
+Follow instructions at drupal menu, install.
+cd /var/www/site/sites/all/ && git clone https://github.com/CheckoutCrypto/site.git
+git submodule init && git submodule update
+Login as admin, enable all modules, fix configurations e.g. smtp, site config, theme settings, blocks, etc.
+```
+
+Detailed site instructions on CheckoutCrypto's site installation and configuration can be found in that repository's readme https://github.com/CheckoutCrypto/site

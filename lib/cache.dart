@@ -6,8 +6,8 @@
 library cache;
 
 import 'package:mongo_dart/mongo_dart.dart';
-import 'package:dart_worker/objects/daeobj.dart';
-import 'package:dart_worker/objects/dbobj.dart';
+import 'objects/daeobj.dart';
+import 'objects/dbobj.dart';
 import 'dart:async';
 
 class Cache {

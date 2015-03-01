@@ -36,7 +36,7 @@ class Server {
     daemons = dae;
     dbConn = new dbConnect(sql);
     parse = new Parse();
-    setAllTxFees(dae).then((_) {
+    setAllTxFees(daemons).then((_) {
       print("Starting HTTP Server on $IP at Port: $PORT");
       HttpServer.bind(IP, PORT).then(listenForRequests).catchError((e) => print('error: ${e.toString()}'));
     });
@@ -79,9 +79,9 @@ class Server {
     }, onDone: () {
       var decoded = JSON.decode(data.toString());
       if (decoded.containsKey('apikey') && decoded.containsKey('coin') && decoded.containsKey('action') && decoded.containsKey('params')) {
-        if (decoded["apikey"] == apikey) {
+        if (decoded["apikey"] == apikey) {        
           if (parse.checkCoinActionParams(daemons, decoded["coin"], decoded["action"], decoded["params"])) {
-            rpcHandler(req, decoded, daemons);
+             rpcHandler(req, decoded, daemons);
           }
         }
       }
@@ -94,9 +94,11 @@ class Server {
    *  Prepare and create the initial RPC request, when socket connection received
    */
   void rpcHandler(HttpRequest req, var decoded, daeObjs daemons) {
+    daemons.displayAll();
     var rpc = new rpcCntrl(daemons);
     var params = new Map();
 
+    decoded["coin"] = decoded["coin"].toString().toUpperCase(); 
     params["coin"] = decoded["coin"];
     params["action"] = decoded["action"];
     params["uid"] = decoded["params"]["uid"];

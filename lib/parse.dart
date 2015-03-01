@@ -81,7 +81,7 @@ class Parse {
  *  RPC Call Validation Control
  */
   bool checkCoinActionParams(daeObjs daemons, var coin, var action, var params) {
-
+  
     if (checkCoin(daemons, coin)) {
       if (checkAction(action)) {
         ///checkParams(params)){
@@ -96,7 +96,7 @@ class Parse {
  * Check Coins, ensure they are already present and enabled in database cache
  */
   bool checkCoin(daeObjs daemons, var coin) {
-    if (daemons.verifyCoinExists(coin)) {
+    if (daemons.verifyCoinExists(coin.toString().toUpperCase())) {
       return true;
     }
     error = "incorrect action";
