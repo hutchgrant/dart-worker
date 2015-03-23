@@ -1,8 +1,8 @@
-# dart_worker
+#CheckoutCrypto Dart Worker
 
 A dart port for CheckoutCrypto's multi-cryptocurrency worker.
 
-Install:
+##Git Install:
 ```
 sudo add-apt-repository ppa:hachre/dart
 sudo apt-get update
@@ -20,79 +20,84 @@ note: you can launch server standalone for a service etc with:
 dart main.dart -server
 ```
 
-Library Usage:
-===============
-* Cache + Menu + Server:
-You need to add the following to your main, to configure the cache and start the menu/server:
-```
-import 'package:dart_worker/ccserver.dart';
+Post-Install
+You need a CheckoutCrypto Site and your own custom client. No official, dart-worker, api, client, released yet. This port is still in early development. 
 
-main(List<String> arguments){
-  
-  bool menu = true;
-  /// add -server to startup for standalone server
-  if(arguments.length != 0){
-     if(arguments[0] == "-server"){   
-      menu = false;
-    } 
+##Docker install 
+
+###Pre-install and run MongoDB daemon container with mysql connection
+
+```
+ sudo docker run -it -d --name mongo dockerfile/mongodb
+```
+
+###Add table and user (need latest docker)
+
+```
+sudo docker exec -it mongo /bin/bash
+mongo
+db.createCollection("bitcoin")
+use bitcoin
+db.createUser(
+  {
+    user: "test",
+    pwd: "testpass",
+    roles: [ { role: "userAdmin", db: "bitcoin" } ]
   }
-  
-  var srvConfig = new Map();
+)
+```
+
+###Run CheckoutCrypto Dart worker container with mongo
+
+```
+docker run --name cc-dart -p 4042:4042 --link mongo:mongo -it -d checkoutcrypto/worker-dart
+```
+
+##Required Setup for a single/daemon run
+
+Edit the user and database, ip, port, etc for mongo and whatever you want your dart http server to be.
+
+```
+sudo docker exec -it cc-dart /bin/bash 
+vi /worker/bin/main.dart
+```
+
+```
   ///// HTTP Server Setup
   srvConfig["server_ip"] = "127.0.0.1";
   srvConfig["server_port"] = 4042;
   ///// Mongo Config
   srvConfig["mongo_ip"] = "127.0.0.1";
   srvConfig["mongo_port"] = "27017";
-  srvConfig["mongo_table"] = "";
-  srvConfig["mongo_user"] ="";
-  srvConfig["mongo_pass"] = "";
-  ///// Start Server
-  var server = new ccServer(menu, srvConfig);
-}
+  srvConfig["mongo_table"] = "bitcoin";
+  srvConfig["mongo_user"] ="test";
+  srvConfig["mongo_pass"] = "testpass";
 ```
-* Objects:
-```
-daeObj() - Daemon Object
+##Required Setup, configuration and post-installation
 
-dbObj() - MySQL Database Object
+1. Add CheckoutCrypto Site Database connection 
+2. Add Bitcoin RPC settings
+3. Generate a key for our client(Front end API)
+4. Start Server
 
-wallet() - Wallet Object
-```
+- [CheckoutCrypto Drupal Site and Database](https://registry.hub.docker.com/u/checkoutcrypto/site/) Installed and configured separately.
+- [Bitcoin daemon](https://bitcoin.org/en/download)
 
-Configure:
-=============
+## Menu Usage:
+
 ```
-CheckoutCrypto Menu
-Options
-1) Add remote DB
-2) Add Rpc Coin
-3) Generate Worker key
-4) Start Server
+ docker run -d -p 4042:4042 --link mongo:mongo checkoutcrypto/worker-dart dart /worker/bin/main.dart
+```
+## Run Server Standalone
+
+```
+ docker run -d -it -p 4042:4042 --link mongo:mongo checkoutcrypto/worker-dart dart /worker/bin/main.dart  -server
 ```
 
-1. Add a remote(CheckoutCrypto drupal site) DB to send the results of api queries</li>
-2. Add each cryptocurrency RPC config information  
+##CheckoutCrypto Worker Dart Client Example
 
-- Coin(short form)<
-- RPC User
-- RPC Password
-- RPC Server
-- RPC Port
-- fee(host's service) + txfee
-- Rate(set by cron later)
-- Max Confirmation - The confirm at which a trade, deposit, withdrawal, is made
-- Enable/Disable(true/false) 
+This is a dart client connection example, to connect to this repository's dart worker.
 
-3. Generate an API key
-4. Start the HTTP Server - Set IP and port in ./lib/server.dart
-
-Client
-===========
-
-Calls should be made from an authenticated front end api, utilizing a POST request to the dart-worker, accompanied by the worker's generated API key(see above). 
-
-Connect to the Server using a client POST function similar to this:
 ```
 String url = "http://127.0.0.1:4042"
 request = new HttpRequest();
@@ -101,15 +106,8 @@ request.open('POST', url);
 request.send('{"apikey":"$apikey", "coin":"BTC", "action":"getnewaddress", "params":{"uid":1, "account":"fee", "address":"", "recipient":"", "amount":""} }');
 ```
 
-Remote(or local) site and Database
-==============
-```
-sudo apt-get install git drush phpmyadmint curl php5-curl apache2 mysql-server mysql-client
+[Read more](https://github.com/hutchgrant/dart-worker)
 
-Follow instructions at drupal menu, install.
-cd /var/www/site/sites/all/ && git clone https://github.com/CheckoutCrypto/site.git
-git submodule init && git submodule update
-Login as admin, enable all modules, fix configurations e.g. smtp, site config, theme settings, blocks, etc.
-```
+
 
 Detailed site instructions on CheckoutCrypto's site installation and configuration can be found in that repository's readme https://github.com/CheckoutCrypto/site
